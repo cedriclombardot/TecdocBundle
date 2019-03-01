@@ -171,7 +171,7 @@ class ImportManager
                 $tableRow['`'.$columns[$columnId]->name.'`'] = $this->formatColumn($columns[$columnId]->type, $data);
             }
 
-            $db->insert($tableName, $tableRow);
+            $this->insertIgnore($db, $tableName, $tableRow);
 
             if ($rowCount % 1000 == 0) {
                 $db->commit();
@@ -181,6 +181,30 @@ class ImportManager
         $db->commit();
 
         return $rowCount;
+    }
+
+    public function insertIgnore($db, $tableExpression, array $data, array $types = [])
+    {
+        if (empty($data)) {
+            return $db->executeUpdate('INSERT IGNORE INTO ' . $tableExpression . ' () VALUES ()');
+        }
+
+        $columns = [];
+        $values  = [];
+        $set     = [];
+
+        foreach ($data as $columnName => $value) {
+            $columns[] = $columnName;
+            $values[]  = $value;
+            $set[]     = '?';
+        }
+
+        return $db->executeUpdate(
+            'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ')' .
+            ' VALUES (' . implode(', ', $set) . ')',
+            $values,
+            is_string(key($types)) ? $db->extractTypeValues($columns, $types) : $types
+        );
     }
 
     /**
