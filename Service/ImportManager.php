@@ -63,6 +63,8 @@ class ImportManager
                     $this->entityManager->getClassMetadata($entityClass)->getTableName(),
                     $fileAnnotation->getColumns()
                 );
+
+                rename($fileName, $fileName.'.processed');
             } catch (FileNotFoundException $e) {
                 $result[$fileName] = null;
             }
