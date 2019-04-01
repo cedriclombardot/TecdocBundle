@@ -94,6 +94,11 @@ class ImportManager
      */
     public function getEntityFiles(Table $table): array
     {
+        if (getenv('FILE')) {
+            return [
+                getenv('FILE'),
+            ];
+        }
         $files = [];
 
         $filesystem = new Filesystem();
@@ -158,6 +163,7 @@ class ImportManager
     private function importFile(string $fileName, string $tableName, array $columns): int
     {
         $file = new FileFixedWidth($fileName);
+        $fp = fopen('sql/'.basename($fileName).'.sql', 'w');
         foreach ($columns as $columnId => $column) {
             $file->addColumn($columnId, $column->start, $column->width);
         }
@@ -165,7 +171,11 @@ class ImportManager
         $db = $this->getDatabaseConnection();
 
         $rowCount = 0;
-        while (($fileRow = $file->getRow())) {
+        $fileRow = $file->getRow();
+
+        $perCommit = 5000;
+
+        while ($fileRow) {
             $rowCount++;
 
             $tableRow = [];
@@ -173,40 +183,41 @@ class ImportManager
                 $tableRow['`'.$columns[$columnId]->name.'`'] = $this->formatColumn($columns[$columnId]->type, $data);
             }
 
-            $this->insertIgnore($db, $tableName, $tableRow);
+            $fileRow = $file->getRow();
 
-            if ($rowCount % 1000 == 0) {
-                $db->commit();
-            }
+            fputs($fp, $this->insertIgnore(
+                $db,
+                $tableName,
+                $tableRow,
+                $rowCount % $perCommit === 1,
+                $rowCount % $perCommit === 0 || !$fileRow
+            ));
+
         }
 
-        $db->commit();
+        fclose($fp);
+       // $db->commit();
 
         return $rowCount;
     }
 
-    public function insertIgnore($db, $tableExpression, array $data, array $types = [])
+    public function insertIgnore($db, $tableExpression, array $data, $isFirst, $isLast) : string
     {
-        if (empty($data)) {
-            return $db->executeUpdate('INSERT IGNORE INTO ' . $tableExpression . ' () VALUES ()');
-        }
-
         $columns = [];
         $values  = [];
         $set     = [];
 
         foreach ($data as $columnName => $value) {
             $columns[] = $columnName;
-            $values[]  = $value;
-            $set[]     = '?';
+            $values[]  = $db->quote($value);
+            $set[]     = '%s';
         }
 
-        return $db->executeUpdate(
-            'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ')' .
-            ' VALUES (' . implode(', ', $set) . ')',
-            $values,
-            is_string(key($types)) ? $db->extractTypeValues($columns, $types) : $types
-        );
+        return sprintf(
+            ($isFirst ? 'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ') VALUES ' : '') .
+            ' (' . implode(', ', $set) . ')'. ($isLast ? ';' : ','),
+            ...$values
+        )."\n";
     }
 
     /**
@@ -274,5 +285,4 @@ class ImportManager
 
         return $data;
     }
-
 }
