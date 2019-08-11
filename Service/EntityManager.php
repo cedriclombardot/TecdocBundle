@@ -6,5 +6,4 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 
 class EntityManager extends EntityManagerDecorator
 {
-
 }

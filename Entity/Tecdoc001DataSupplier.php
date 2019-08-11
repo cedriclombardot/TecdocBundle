@@ -69,5 +69,4 @@ class Tecdoc001DataSupplier
 
         return $this;
     }
-
 }

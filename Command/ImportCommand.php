@@ -65,7 +65,11 @@ class ImportCommand extends ContainerAwareCommand
         $processQueue = [];
         foreach ($this->importManager->getEntities() as $entity) {
             $processQueue[] = new Process(
-                'bin/console tecdoc:import --entity="'.$entity.'"', null, null, null, null
+                'bin/console tecdoc:import --entity="'.$entity.'"',
+                null,
+                null,
+                null,
+                null
             );
         }
 
@@ -97,5 +101,4 @@ class ImportCommand extends ContainerAwareCommand
             usleep(1000);
         }
     }
-
 }

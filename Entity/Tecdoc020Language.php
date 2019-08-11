@@ -70,5 +70,4 @@ class Tecdoc020Language
 
         return $this;
     }
-
 }

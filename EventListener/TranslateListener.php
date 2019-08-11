@@ -65,5 +65,4 @@ class TranslateListener
             $entity->setImage($this->translateManager->getImage($entity->getBildnr(), $entity->getDokumentenart()));
         }
     }
-
 }

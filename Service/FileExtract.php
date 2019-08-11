@@ -51,7 +51,6 @@ class FileExtract
         $finder->files()->in($dirSource);
 
         foreach ($finder as $file) {
-
             $fileName = explode('.', $file->getBasename(), 2);
 
             $supplierId = $fileName[0];
@@ -151,5 +150,4 @@ class FileExtract
     {
         passthru('7z x -y -o'.$dirTarget.' '.$filename);
     }
-
 }

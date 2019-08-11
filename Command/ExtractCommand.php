@@ -60,5 +60,4 @@ class ExtractCommand extends ContainerAwareCommand
             );
         }
     }
-
 }

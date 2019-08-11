@@ -79,5 +79,4 @@ class FileFixedWidth
 
         return $row;
     }
-
 }
