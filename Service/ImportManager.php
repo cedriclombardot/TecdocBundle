@@ -185,7 +185,6 @@ class ImportManager
             }
 
             $fileRow = $file->getRow();
-
             fputs($fp, $this->insertIgnore(
                 $db,
                 $tableName,
@@ -204,30 +203,32 @@ class ImportManager
 
     public function insertIgnore($db, $tableExpression, array $data, $isFirst, $isLast) : string
     {
-        $columns = [];
         $values  = [];
         $set     = [];
 
         foreach ($data as $columnName => $column) {
-            $columns[] = $columnName;
             switch ($column->type) {
                 case "integer":
                 case 'smallint':
                 case 'bigint':
-                    $values[]  = (int) $column->value > 0 ? (int) $column->value : 'NULL';
+                    $values[$columnName]  = (int) $column->value > 0 ? (int) $column->value : 'NULL';
                     break;
 
                 case 'date':
-                    $values[]  = $column->value == null ? 'NULL' : $column->value;
+                    $values[$columnName]  = $column->value == null ? 'NULL' : $column->value;
                 default:
-                    $values[]  = $db->quote($column->value);
+                    $values[$columnName]  = $db->quote($column->value);
             }
 
             $set[]     = '%s';
         }
 
+        $columns = array_keys($values);
+        $values = array_values($values);
+
         return sprintf(
-            ($isFirst ? 'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ') VALUES ' : '') .
+            ($isFirst ? 'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ')
+            VALUES ' : '') .
             ' (' . implode(', ', $set) . ')'. ($isLast ? ';' : ','),
             ...$values
         )."\n";
