@@ -223,13 +223,22 @@ class ImportManager
             $set[]     = '%s';
         }
 
+        $updateAttr = [];
+
+        foreach ($values as $col => $value) {
+            $updateAttr[] = sprintf('%s = %s', $col, $value);
+        }
+
         $columns = array_keys($values);
         $values = array_values($values);
 
         return sprintf(
             ($isFirst ? 'INSERT IGNORE INTO ' . $tableExpression . ' (' . implode(', ', $columns) . ')
             VALUES ' : '') .
-            ' (' . implode(', ', $set) . ')'. ($isLast ? ';' : ','),
+            ' (' . implode(', ', $set) . ')
+            ON DUPLICATE KEY UPDATE
+                '. implode(', ', $updateAttr) .'
+            '. ($isLast ? ';' : ','),
             ...$values
         )."\n";
     }
