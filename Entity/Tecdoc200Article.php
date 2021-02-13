@@ -133,5 +133,4 @@ class Tecdoc200Article
 
         return $this;
     }
-
 }

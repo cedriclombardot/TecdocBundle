@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
  */
 class FileFixedWidthTest extends TestCase
 {
-
     public function testFile()
     {
         $file = new FileFixedWidth(__DIR__.'/../Fixtures/supplier/2562/001.2562');
@@ -36,5 +35,4 @@ class FileFixedWidthTest extends TestCase
 
         new FileFixedWidth(__DIR__.'/../Fixtures/supplier/2562/001.1112');
     }
-
 }

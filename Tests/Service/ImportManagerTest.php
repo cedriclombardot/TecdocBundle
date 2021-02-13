@@ -14,7 +14,6 @@ use Gweb\TecdocBundle\Service\ImportManager;
  */
 class ImportManagerTest extends TestCase
 {
-
     public function testEntityFiles()
     {
         // mock entity manager
@@ -29,13 +28,14 @@ class ImportManagerTest extends TestCase
             ]
         );
 
-        $import = new ImportManager($objectManager,
+        $import = new ImportManager(
+            $objectManager,
             __DIR__.'/../Fixtures/reference',
-            __DIR__.'/../Fixtures/supplier');
+            __DIR__.'/../Fixtures/supplier'
+        );
 
         $files = $import->getEntityFiles($table);
 
         self::assertArraySubset([0 => __DIR__.'/../Fixtures/supplier/2562/001.2562'], $files);
     }
-
 }

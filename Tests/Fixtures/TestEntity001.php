@@ -62,5 +62,4 @@ class TestEntity001
 
         return $this;
     }
-
 }

@@ -81,7 +81,7 @@ class TranslateManager
         );
 
         if (!$language) {
-            throw new \RuntimeException('Language not found');
+            throw new \RuntimeException('Language not found '.$isocode);
         }
 
         $this->languageId = $language->getSprachNr();

@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
  */
 class FileAnnotationTest extends TestCase
 {
-
     public function testAnnotation()
     {
         $annotation = new FileAnnotation(TestEntity001::class);

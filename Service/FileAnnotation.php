@@ -76,8 +76,7 @@ class FileAnnotation
      */
     private function setColumns(AnnotationReader $reader, \ReflectionObject $reflectionObj)
     {
-        foreach ($reflectionObj->getProperties() as $property)
-        {
+        foreach ($reflectionObj->getProperties() as $property) {
             $propertyAnnotations = $reader->getPropertyAnnotations($property);
             $ormAnnotation = false;
 
@@ -120,5 +119,4 @@ class FileAnnotation
     {
         return $this->columns;
     }
-
 }

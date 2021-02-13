@@ -98,5 +98,4 @@ class Tecdoc030LanguageDescription
 
         return $this;
     }
-
 }

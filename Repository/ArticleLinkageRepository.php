@@ -43,5 +43,4 @@ class ArticleLinkageRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
-
 }
